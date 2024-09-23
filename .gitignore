@@ -39,5 +39,6 @@ coverage
 *.log
 docker-compose.override.yml
 Dockerfile
+Dockerfile-php
 docker-compose.yml
 *.env
