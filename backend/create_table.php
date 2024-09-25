@@ -6,7 +6,7 @@ $sql = "CREATE TABLE IF NOT EXISTS tasks (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(20) NOT NULL,
     description TEXT,
-    status ENUM('pending', 'completed') DEFAULT 'pending',
+    status ENUM('pending', 'in-progress', 'completed') DEFAULT 'pending',
     CREATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
 )";
