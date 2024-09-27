@@ -1,15 +1,6 @@
 <template>
-  <div  class="wrapper">
+  <div class="wrapper">
     <h1 class="purple">Task Manager</h1>
-    <form @submit.prevent="createTask">
-      <label for="task-title">Task Title</label>
-      <input id="task-title" v-model="title" required />
-
-      <label for="task-description">Task Description</label>
-      <textarea id="task-description" v-model="description" required></textarea>
-
-      <button class="btn-submit" type="submit">Add Task</button>
-    </form>
 
     <!-- Notification message -->
     <transition name="fade">
@@ -18,17 +9,41 @@
       </div>
     </transition>
 
-    <ul>
-      <li class="task" v-for="task in tasks" :key="task.id">
-          <div>
-            {{ task.title }} - {{ task.description }} - {{ task.status }}
-          </div>
-          <div>
-            <button class="btn-edit" @click="openEditModal(task)">Edit</button>
-            <button class="btn-delete" @click="deleteTask(task.id)">Delete</button>
-          </div>
-      </li>
-    </ul>
+    <div class="background-container">
+      <div class="columns">
+        <!-- First column: Task creation form -->
+        <div class="form-column">
+          <form @submit.prevent="createTask">
+            <label for="task-title">Task Title</label>
+            <input id="task-title" v-model="title" required />
+
+            <label for="task-description">Task Description</label>
+            <textarea id="task-description" v-model="description" required></textarea>
+
+            <button class="btn-submit" type="submit">Add Task</button>
+          </form>
+        </div>
+
+        <!-- Second column: Task list -->
+        <div class="task-column">
+          <ul v-if="tasks.length > 0">
+            <li class="task" v-for="task in tasks" :key="task.id">
+              <div>
+                <p class="capitalize"><strong>Status:</strong> {{ task.status }}</p>
+                <p><strong>Title:</strong> {{ task.title }}</p>
+                <p><strong>Description:</strong> {{ task.description }}</p>
+              </div>
+              <div>
+                <button class="btn-edit" @click="openEditModal(task)">Edit</button>
+                <button class="btn-delete" @click="deleteTask(task.id)">Delete</button>
+              </div>
+            </li>
+          </ul>
+          <p v-else class="task-column-no-tasks">No tasks</p>
+          <!-- Message displayed when there are no tasks -->
+        </div>
+      </div>
+    </div>
 
     <!-- Modal for editing task -->
     <div v-if="isEditModalOpen" class="modal-overlay">
@@ -49,7 +64,7 @@
         </select>
 
         <div class="modal-buttons">
-          <button class="btn-edit" @click="updateTask">Save Changes</button>
+          <button class="btn-edit" @click="updateTask">Save</button>
           <button class="btn-delete" @click="closeEditModal">Cancel</button>
         </div>
       </div>
@@ -163,8 +178,8 @@ const fetchTasks = async () => {
   }
 }
 
-onMounted(() => {
-  fetchTasks()
+onMounted(async () => {
+  await fetchTasks()
 })
 
 const updateTask = async () => {
@@ -225,6 +240,13 @@ const deleteTask = async (taskId: number) => {
 </script>
 
 <style scoped>
+.background-container {
+  background-color: rgba(120, 55, 195, 0.2);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(120, 55, 195, 0.2);
+}
+
 h1 {
   text-align: center;
 }
@@ -233,12 +255,87 @@ h2 {
   text-align: center;
 }
 
+.capitalize {
+  text-transform: capitalize;
+}
+
 .wrapper {
   display: flex;
-  flex-wrap: wrap;
   flex-direction: column;
+  align-items: center;
   width: 100%;
-  max-width: 400px;
+  position: relative;
+}
+
+.columns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  max-width: 800px;
+}
+
+.task-column-no-tasks {
+  text-align: center;
+  font-weight: bold;
+}
+
+.form-column,
+.task-column {
+  flex: 1 1 300px;
+  min-width: 200px;
+  max-width: 100%;
+  margin: auto;
+}
+
+.task-column {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+@supports selector(::-webkit-scrollbar) {
+  /* Custom scrollbar styles */
+  .task-column::-webkit-scrollbar {
+    width: 4px;
+    padding: 0.5em;
+  }
+
+  .task-column::-webkit-scrollbar-track {
+    background: rgba(120, 55, 195, 0.1);
+  }
+
+  .task-column::-webkit-scrollbar-thumb {
+    background: #7937c5;
+    border-radius: 4px;
+  }
+
+  .task-column::-webkit-scrollbar-thumb:hover {
+    background: #442bd3;
+  }
+}
+/* For Firefox */
+.task-column {
+  scrollbar-width: thin;
+  scrollbar-color: #7937c5 rgba(120, 55, 195, 0.1);
+  padding: 0.5em;
+}
+
+ul {
+  padding: 0;
+  list-style-type: none;
+  margin: 0;
+}
+
+li {
+  margin-bottom: 0.5em;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: normal;
 }
 
 label {
@@ -250,28 +347,15 @@ input,
 textarea {
   height: 40px;
   width: 100%;
-  max-width: 400px;
   padding: 10px;
   box-sizing: border-box;
   border: 1px solid #ccc;
   border-radius: 4px;
-  margin-bottom: 1.5em;
+  margin-bottom: 1em;
 }
 
 textarea {
   height: 80px;
-}
-
-ul {
-  padding: 0;
-  list-style-type: none;
-}
-
-li {
-  margin-bottom: 1ch;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
 }
 
 button {
@@ -299,10 +383,16 @@ button:hover {
 .btn-submit {
   margin-bottom: 1.5em;
   width: 100%;
-  max-width: 400px;
-  place-self: center;
 }
-
+.btn-edit,
+.btn-delete {
+  display: inline-block;
+  align-items: center;
+  text-align: center;
+  height: 30px;
+  width: 100px;
+  padding: 0 10px;
+}
 .btn-edit {
   background-color: #442bd3;
   margin-right: 1em;
@@ -320,14 +410,22 @@ button:hover {
   background-color: #d32f2f;
 }
 
+.task {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
 /* Notification styles */
 .notification {
+  position: fixed;
+  top: 10px;
   padding: 10px;
-  margin-bottom: 10px;
   border-radius: 5px;
   text-align: center;
   opacity: 1;
   transition: opacity 0.5s ease-in-out;
+  z-index: 1000;
 }
 
 .success {
@@ -372,26 +470,18 @@ button:hover {
   margin: 0 auto;
 }
 
-.modal-content * {
-  margin: 1em 0;
-}
-
 .modal-select {
-  width: 100%; /* Make the select full width */
-  padding: 10px; /* Add padding for better appearance */
-  box-sizing: border-box; /* Include padding in width calculation */
-  border: 1px solid #ccc; /* Match the border style */
-  border-radius: 4px; /* Consistent border radius */
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 1em;
 }
 
 .modal-buttons {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-.task{
-  display: flex;
-  place-items: center;
-  justify-content: space-between;
 }
 </style>
