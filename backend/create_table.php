@@ -13,7 +13,7 @@ $sql = "CREATE TABLE IF NOT EXISTS tasks (
 
 try {
     $connect->exec($sql);
-    echo "Task 'table creation' successfull";
+    echo "Task 'table creation' successful";
 } catch (PDOException $e) {
     echo "Error creating table failed: " . $e->getMessage();
 }
